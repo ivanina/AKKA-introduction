@@ -45,10 +45,23 @@ public class Calculator extends AbstractActor {
     public Receive createReceive() {
         return receiveBuilder()
                 .match(CalculateInt.class, p1Int -> {
+
+                    //to do something very hard
+                    System.out.println("(A) Start to-do for INT");
+                    Thread.sleep(3000);
+                    System.out.println("(A) Finished to-do for INT");
+                    //to do finished something very hard
+
                     this.p1Int = p1Int.parameterInt;
                 })
                 .match(CalculateDouble.class, p1Dbl -> {
                     this.p1Dbl = p1Dbl.parameterDouble;
+                    
+                    //to do something very hard
+                    System.out.println("(B) Start to-do for Double");
+                    Thread.sleep(2000);
+                    System.out.println("(B) Finished to-do for Double");
+                    //to do finished something very hard
                     Integer result = calculatorCalculate();
                     this.outbutter.tell(new Outputter.Printer(result),self() );
                 })
