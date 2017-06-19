@@ -56,7 +56,7 @@ public class Calculator extends AbstractActor {
                 })
                 .match(CalculateDouble.class, p1Dbl -> {
                     this.p1Dbl = p1Dbl.parameterDouble;
-                    
+
                     //to do something very hard
                     System.out.println("(B) Start to-do for Double");
                     Thread.sleep(2000);
