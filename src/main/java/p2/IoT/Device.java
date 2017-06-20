@@ -27,6 +27,27 @@ public class Device extends AbstractActor {
 
     //---------------
 
+    //  - A -
+    public static final class RecordTemperature{
+        public final long requestId;
+        public final double value;
+
+        public RecordTemperature(long requestId, double value) {
+            this.requestId = requestId;
+            this.value = value;
+        }
+    }
+
+    //  - A -
+    public static final class TemperatureRecorded{
+        public final long requestId;
+
+        public TemperatureRecorded(long requestId) {
+            this.requestId = requestId;
+        }
+    }
+
+    //  - B -
     public static final class ReadTemperature{
         public long requestId;
 
@@ -35,8 +56,7 @@ public class Device extends AbstractActor {
         }
     }
 
-
-
+    //  - B -
     public static final class RespondTemperature{
         public long requestId;
         public Optional<Double> value;
@@ -53,6 +73,11 @@ public class Device extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
+                .match(RecordTemperature.class, r -> {
+                    log.info("Recorded temperature reading {} with {}", r.value, r.requestId);
+                    lastTemperatureReading = Optional.of(r.value);
+                    getSender().tell(new TemperatureRecorded(r.requestId), getSelf());
+                })
                 .match(ReadTemperature.class, p -> {
                     getSender().tell(new RespondTemperature(p.requestId,lastTemperatureReading), getSelf());
                 }).build();
