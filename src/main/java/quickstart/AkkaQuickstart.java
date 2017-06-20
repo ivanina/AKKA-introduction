@@ -2,7 +2,8 @@ package quickstart;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import quickstart.Greeter.*;
+import quickstart.Greeter.Greet;
+import quickstart.Greeter.WhoToGreet;
 
 import java.io.IOException;
 

@@ -1,16 +1,15 @@
 package p2;
 
-import akka.testkit.javadsl.TestKit;
-import org.junit.*;
-
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.testkit.javadsl.TestKit;
+import org.junit.Before;
+import org.junit.Test;
 import p2.IoT.Device;
-
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class DeviceTest  {
 

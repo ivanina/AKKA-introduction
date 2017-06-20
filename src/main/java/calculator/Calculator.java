@@ -3,7 +3,6 @@ package calculator;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
-import scala.Int;
 
 public class Calculator extends AbstractActor {
 

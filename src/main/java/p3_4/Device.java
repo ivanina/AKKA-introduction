@@ -1,4 +1,4 @@
-package p2.IoT;
+package p3_4;
 
 
 import akka.actor.AbstractActor;
@@ -9,10 +9,11 @@ import akka.event.LoggingAdapter;
 import java.util.Optional;
 
 public class Device extends AbstractActor {
-    private final LoggingAdapter log = Logging.getLogger(getContext().system(),this);
 
-    final String groupId;
-    final String deviceId;
+    private  final LoggingAdapter log = Logging.getLogger(context().system(),this);
+
+    private String groupId;
+    private String deviceId;
 
     Optional<Double> lastTemperatureReading = Optional.empty();
 
@@ -25,10 +26,10 @@ public class Device extends AbstractActor {
         return Props.create(Device.class,groupId,deviceId);
     }
 
-    //---------------
+    //-----------------
 
-    //  - A -
-    public static final class RecordTemperature{
+    // recording - it's state
+    public final static class RecordTemperature{
         public final long requestId;
         public final double value;
 
@@ -38,8 +39,8 @@ public class Device extends AbstractActor {
         }
     }
 
-    //  - A -
-    public static final class TemperatureRecorded{
+    // report about recording - it's marker
+    public final static class TemperatureRecorded {
         public final long requestId;
 
         public TemperatureRecorded(long requestId) {
@@ -48,19 +49,19 @@ public class Device extends AbstractActor {
     }
 
 
-    //  - B -
-    public static final class ReadTemperature{
-        public long requestId;
+    // requesting temperature - it's marker
+    public final static class ReadTemperature {
+        public final long requestId;
 
         public ReadTemperature(long requestId) {
             this.requestId = requestId;
         }
     }
 
-    //  - B -
-    public static final class RespondTemperature{
-        public long requestId;
-        public Optional<Double> value;
+    // responding temperature - it's state
+    public final static  class  RespondTemperature {
+        public final long requestId;
+        public final Optional<Double> value;
 
         public RespondTemperature(long requestId, Optional<Double> value) {
             this.requestId = requestId;
@@ -68,31 +69,41 @@ public class Device extends AbstractActor {
         }
     }
 
-    //---------------
 
+    //------------------
 
     @Override
     public Receive createReceive() {
         return receiveBuilder()
                 .match(RecordTemperature.class, r -> {
-                    log.info("Recorded temperature reading {} with {}", r.value, r.requestId);
                     lastTemperatureReading = Optional.of(r.value);
-                    getSender().tell(new TemperatureRecorded(r.requestId), getSelf());
+                    log.info("Device {} - {}. Temperature updated - set new value: {}",
+                            groupId,deviceId,lastTemperatureReading.get());
+                    getSender().tell(
+                            new TemperatureRecorded(r.requestId),
+                            getSelf()
+                    );
                 })
                 .match(ReadTemperature.class, p -> {
-                    getSender().tell(new RespondTemperature(p.requestId,lastTemperatureReading), getSelf());
-                }).build();
+                    log.info("Device {} - {}. Asked the temperature. Responded value: {}",
+                            groupId,deviceId,lastTemperatureReading.get());
+                    getSender().tell(
+                            new RespondTemperature(p.requestId,lastTemperatureReading),
+                            getSelf()
+                    );
+                })
+                .build();
     }
 
     @Override
     public void preStart() throws Exception {
-        log.info("Device actor {}-{} started",groupId,deviceId);
+        log.info("Device {} - {} started",groupId,deviceId);
         super.preStart();
     }
 
     @Override
     public void postStop() throws Exception {
-        log.info("Device actor {}-{} Stopped",groupId,deviceId);
+        log.info("Device {} - {} stopped",groupId,deviceId);
         super.postStop();
     }
 }

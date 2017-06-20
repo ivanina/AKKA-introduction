@@ -1,7 +1,9 @@
 package e1_hello;
 
-import akka.actor.*;
-import akka.japi.pf.ReceiveBuilder;
+import akka.actor.AbstractActor;
+import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
+import akka.actor.Props;
 
 public class HelloSayLambda {
     public static void main(String[] args) {
